@@ -1,6 +1,9 @@
 import * as THREE from 'https://unpkg.com/three@0.140.2/build/three.module.js';
-//import {GLTFLoader} from 'https://unpkg.com/three@0.140.2/examples/jsm/loaders/GLTFLoader.js';
+import { OrbitControls } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js';
 
+//import {GLTFLoader} from 'https://unpkg.com/three@0.140.2/examples/jsm/loaders/GLTFLoader.js';
+//import * from '/node_modules/three/examples/js/loaders/GLTFLoader.js';
 
 
 
@@ -9,12 +12,13 @@ const playerCar = Car();
 scene.add(playerCar);       // adding player's car to the scene
 
 
-// const loader = new GLTFLoader();
-// loader.load('objects/playerCar/scene.gltf', function(gltf){
-//     scene.add(gltf.scene);
-// }, undefined, function(error){
-//     console.error(error);
-// });
+const loader = new GLTFLoader();
+loader.load('objects/playerCar/scene.gltf', function(gltf){
+    scene.add(gltf.scene);
+}, undefined, function(error){
+    console.error(error);
+});
+
 
 //track consts
 const trackRadius = 225;
