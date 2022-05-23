@@ -1,20 +1,23 @@
-import * as THREE from 'https://unpkg.com/three@0.140.2/build/three.module.js';
-//import {GLTFLoader} from 'https://unpkg.com/three@0.140.2/examples/jsm/loaders/GLTFLoader.js';
+import * as THREE from 'three';
+import { GLTFLoader }  from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
 
 
-
-
+let car;
 const scene = new THREE.Scene();
 const playerCar = Car();
 scene.add(playerCar);       // adding player's car to the scene
 
 
-// const loader = new GLTFLoader();
-// loader.load('objects/playerCar/scene.gltf', function(gltf){
-//     scene.add(gltf.scene);
-// }, undefined, function(error){
-//     console.error(error);
-// });
+const loader = new GLTFLoader();
+loader.load('objects/playerCar/scene.glb', function(gltf){
+
+    car = gltf.scene;
+   car.position.y = -100;
+   car.scene.scale.set(0,2,2);
+    scene.add(car);
+}, undefined, function(error){
+    console.error(error);
+});
 
 //track consts
 const trackRadius = 225;
