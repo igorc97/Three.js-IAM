@@ -86,6 +86,11 @@ let ready;
 let playerAngleMoved;
 let score;
 const scoreElement = document.getElementById("score");
+const buttonsElement = document.getElementById("buttons");
+const instructionsElement = document.getElementById("instructions");
+const resultsElement = document.getElementById("results");
+const accelerateButton = document.getElementById("accelerate");
+const decelerateButton = document.getElementById("decelerate");
 let otherVehicles = [];
 let lastTimestamp;
 const playerAngleInitial = Math.PI;
@@ -544,13 +549,14 @@ function renderMap(mapWidth, mapHeight){
     const plane = new THREE.Mesh(planeGeometry, planeMaterial);
     scene.add(plane);
 
-    //extruded geometry
+    //extruded geometry with curbs
 
     const islandLeft = getLeftIsland();
     const islandRight = getRightIsland();
     const islandMiddle = getMiddleIsland();
     const outerField  = getOuterField(mapWidth, mapHeight);
     
+    // An extruded geometry turns a 2D shape into 3D by giving it a depth
     const fieldGeometry = new THREE.ExtrudeBufferGeometry(
         [islandLeft, islandMiddle, islandRight, outerField],
         {depth: 6, bevelEnabled: false}
