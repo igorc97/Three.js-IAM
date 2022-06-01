@@ -2,13 +2,17 @@ import * as THREE from 'three';
 import { GLTFLoader }  from './node_modules/three/examples/jsm/loaders/GLTFLoader.js';
 
 
-let car;
+let tree, carObstacle;
+let treeObj = new THREE.Object3D(); // three object where glb will be stored
 const scene = new THREE.Scene();
 const playerCar = Car();
 scene.add(playerCar);       // adding player's car to the scene
 
+const config = {
+    trees: true
+};
 
-// const loader = new GLTFLoader();
+ const loader = new GLTFLoader();
 // loader.load('objects/playerCar/scene.glb', function(gltf){
 
 //     car = gltf.scene;
@@ -95,6 +99,8 @@ let otherVehicles = [];
 let lastTimestamp;
 const playerAngleInitial = Math.PI;
 const speed = 0.0017;
+let accelerate = false;
+let decelerate = false;
 //let accelerate;
 //let decelerate;
 
@@ -123,8 +129,7 @@ reset();
          renderer.setAnimationLoop(animation);
      }
  }
- let accelerate = false;
- let decelerate = false;
+
 
  window.addEventListener("keydown", function (event){
      if(event.key == "ArrowUp"){
@@ -216,7 +221,7 @@ function animation(timestamp){
  }
 
 
- function getVehicleSpeed(){
+ function getVehicleSpeed(type){
      if (type == "car"){
          const minimumSpeed = 1;
          const maximumSpeed = 2;
@@ -259,13 +264,13 @@ function animation(timestamp){
   function hitDetection(){
     const playerHitZone1 = getHitZonePosition(
         playerCar.position,
-        playerAngleInitial + playerAngle,
+        playerAngleInitial + playerAngleMoved,
         true,
         15
     );
     const playerHitZone2 = getHitZonePosition(
         playerCar.position,
-        playerAngleInitial + playerAngle,
+        playerAngleInitial + playerAngleMoved,
         true,
         -15
     );
@@ -359,6 +364,19 @@ function Car(){
     car.add(cabin);
 
     return car;
+}
+
+function Truck(){
+    loader.load('objects/playerCar/scene.glb', function(gltf){
+        //treeObj = gltf.scene;
+        
+        carObstacle = gltf.scene;
+   
+    //scene.add(tree);  //to moze potem xd
+}, undefined, function(error){
+    console.error(error);
+});
+return carObstacle;
 }
 
 function Wheel(){
@@ -566,11 +584,73 @@ function renderMap(mapWidth, mapHeight){
         new THREE.MeshLambertMaterial({ color: 0x23311c}),
     ]);
     scene.add(fieldMesh);
+
+    if(config.trees){
+        const tree1 = Tree();
+        tree1.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
+        scene.add(tree1);
+        
+        const tree2 = Tree();
+        tree2.position.y = arcCenterX * 1.9;
+        tree2.position.x = arcCenterX * 1.3;
+        scene.add(tree2);
+    
+        const tree3 = Tree();
+        tree3.position.y = arcCenterX * 0.8;
+        tree3.position.x = arcCenterX * 2;
+        scene.add(tree3);
+    
+        const tree4 = Tree();
+        tree4.position.y = arcCenterX * 1.8;
+        tree4.position.x = arcCenterX * 2;
+        scene.add(tree4);
+    
+        const tree5 = Tree();
+        tree5.position.y = -arcCenterX * 1;
+        tree5.position.x = arcCenterX * 2;
+        scene.add(tree5);
+    }
 }
 
 function pickRandom(array){              /// dodac kolory? tak zeby randomowo dawalo kolory na auta itd
     return array[Math.floor(Math.random() * array.length)];
 }
+
+function Tree(){
+    const tree = new THREE.Group();
+
+    loader.load('objects/tree/tree.glb', function(gltf){
+        treeObj = gltf.scene;
+        
+   
+   
+    //scene.add(tree);  //to moze potem xd
+}, undefined, function(error){
+    console.error(error);
+});
+    tree.add(treeObj);
+    return treeObj;
+}
+
+
+
+
+accelerateButton.addEventListener("mousedown", function(){
+    startGame();
+    accelerate = true;
+});
+decelerateButton.addEventListener("mousedown", function(){
+    startGame();
+    decelerate = true;
+});
+accelerateButton.addEventListener("mouseup", function(){
+    accelerate = false;
+});
+decelerateButton.addEventListener("mouseup", function(){
+    decelerate = false;
+});
+
+
 
 function animate(){
     requestAnimationFrame(animate);
