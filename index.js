@@ -8,16 +8,16 @@ const playerCar = Car();
 scene.add(playerCar);       // adding player's car to the scene
 
 
-const loader = new GLTFLoader();
-loader.load('objects/playerCar/scene.glb', function(gltf){
+// const loader = new GLTFLoader();
+// loader.load('objects/playerCar/scene.glb', function(gltf){
 
-    car = gltf.scene;
-   car.position.y = -100;
-   car.scene.scale.set(0,2,2);
-    scene.add(car);
-}, undefined, function(error){
-    console.error(error);
-});
+//     car = gltf.scene;
+//    car.position.y = -100;
+//    //car.scene.scale.set(0,2,2);
+//     scene.add(car);
+// }, undefined, function(error){
+//     console.error(error);
+// });
 
 //track consts
 const trackRadius = 225;
@@ -77,8 +77,228 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 //renderer.render(scene, camera);          /// to niby powinno byc przed {document.body.appendChild...}
-
 animate();
+
+/// GAME LOGIC 
+
+
+let ready;
+let playerAngleMoved;
+let score;
+const scoreElement = document.getElementById("score");
+let otherVehicles = [];
+let lastTimestamp;
+const playerAngleInitial = Math.PI;
+const speed = 0.0017;
+//let accelerate;
+//let decelerate;
+
+//reset function
+reset();
+ function reset(){
+     //reset position and score
+     playerAngleMoved = 0;
+     movePlayerCar(0);
+     score = 0;
+     scoreElement.innerText = score;
+     lastTimestamp = undefined;
+
+     //remove other vehicles
+     otherVehicles.forEach((vehicle) => {
+         scene.remove(vehicle.mesh);
+     });
+     otherVehicles = [];
+     renderer.render(scene, camera);
+     ready = true;
+ }
+//start game function
+ function startGame(){
+     if(ready) {
+         ready = false;
+         renderer.setAnimationLoop(animation);
+     }
+ }
+ let accelerate = false;
+ let decelerate = false;
+
+ window.addEventListener("keydown", function (event){
+     if(event.key == "ArrowUp"){
+         startGame();
+         accelerate = true;
+         return;
+     }
+     if(event.key == "ArrowDown"){
+         decelerate = true;
+         return;
+     }
+     if(event.key == "R" || event.key == "r"){
+         reset();
+         return;
+     }
+ });
+
+ window.addEventListener("keyup", function(event){
+     if(event.key == "ArrowUp"){
+         accelerate = false;
+         return;
+     }
+     if(event.key == "ArrowDown"){
+         decelerate = false;
+         return;
+     }
+ });
+
+function animation(timestamp){
+    if(!lastTimestamp){
+        lastTimestamp = timestamp;
+        return;
+    }
+    const timeDelta = timestamp - lastTimestamp;
+    movePlayerCar(timeDelta);
+
+    const laps = Math.floor(Math.abs(playerAngleMoved) / (Math.PI * 2));
+    /// update score if it changed
+    if(laps != score){
+        score = laps;
+        scoreElement.innerText = score;
+    }
+    /// Add a new vehicle at start and every 5th lap
+    if(otherVehicles.length < (laps + 1) /5){
+        addVehicle();
+    } 
+    moveOtherVehicles(timeDelta);
+    hitDetection();
+    renderer.render(scene, camera);
+    lastTimestamp = timestamp;
+}
+ function movePlayerCar(timeDelta){
+     const playerSpeed = getPlayerSpeed();
+     playerAngleMoved -= playerSpeed * timeDelta;
+     const totalPlayerAngle = playerAngleInitial + playerAngleMoved;
+     
+     const playerX = Math.cos(totalPlayerAngle) * trackRadius - arcCenterX;
+     const playerY = Math.sin(totalPlayerAngle) * trackRadius;
+
+     playerCar.position.x = playerX;
+     playerCar.position.y = playerY;
+
+     playerCar.rotation.z = totalPlayerAngle - Math.PI / 2;
+ }
+
+ function getPlayerSpeed(){
+     if(accelerate){
+         return speed * 2;
+     }
+     if(decelerate){
+         return speed * 0.5;
+     }
+     return speed;
+ }
+
+ function addVehicle(){
+     const vehicleTypes = ["car", "truck"];
+
+     const type = pickRandom(vehicleTypes);
+     const mesh = type == "car" ? Car() : Truck();
+     scene.add(mesh);
+
+     const clockwise = Math.random() >= 0.5;
+     const angle = clockwise ? Math.PI / 2 : -Math.PI / 2;
+
+     const speed = getVehicleSpeed(type);
+     
+     otherVehicles.push({mesh, type, clockwise, angle, speed});
+ }
+
+
+ function getVehicleSpeed(){
+     if (type == "car"){
+         const minimumSpeed = 1;
+         const maximumSpeed = 2;
+         return minimumSpeed + Math.random() * (maximumSpeed - minimumSpeed);
+     }
+     if(type == "truck"){
+         const minimumSpeed = 0.6;
+         const maximumSpeed = 1.5;
+         return minimumSpeed + Math.random() * (maximumSpeed - minimumSpeed);
+     }
+ }
+ 
+  function moveOtherVehicles(timeDelta){
+      otherVehicles.forEach((vehicle) =>{
+          if(vehicle.clockwise){
+              vehicle.angle -= speed * timeDelta * vehicle.speed;
+          } else{
+              vehicle.angle += speed * timeDelta * vehicle.speed;
+          }
+
+          const vehicleX = Math.cos(vehicle.angle) * trackRadius + arcCenterX;
+          const vehicleY = Math.sin(vehicle.angle) * trackRadius;
+
+          const rotation = vehicle.angle + (vehicle.clockwise ? -Math.PI / 2 : Math.PI / 2);
+
+          vehicle.mesh.position.x = vehicleX;
+          vehicle.mesh.position.y = vehicleY;
+          vehicle.mesh.rotation.z = rotation;
+      });
+  }
+
+  function getHitZonePosition(center, angle, clockwise, distance){
+      const directionAngle = angle + clockwise ? -Math.PI /2 : +Math.PI /2;
+      return{
+          x: center.x + Math.cos(directionAngle) * distance,
+          y: center.y + Math.sin(directionAngle) * distance,
+      };
+  }
+
+  function hitDetection(){
+    const playerHitZone1 = getHitZonePosition(
+        playerCar.position,
+        playerAngleInitial + playerAngle,
+        true,
+        15
+    );
+    const playerHitZone2 = getHitZonePosition(
+        playerCar.position,
+        playerAngleInitial + playerAngle,
+        true,
+        -15
+    );
+    const hit = otherVehicles.some((vehicle) => {
+        if(vehicle.type == "car"){
+            const vehicleHitZone1 = getHitZonePosition(
+                vehicle.mesh.position,
+                vehicle.angle,
+                vehicle.clockwise,
+                15
+            );
+            const vehicleHitZone2 = getHitZonePosition(
+                vehicle.mesh.position,
+                vehicle.angle,
+                vehicle.clockwise,
+                -15
+            );
+
+            //the player hits another vehicle
+            if(getDistance(playerHitZone1, vehicleHitZone1) < 40) return true;
+            if(getDistance(playerHitZone1, vehicleHitZone2) < 40) return true;
+
+            //another vehicle hits the player
+            if(getDistance(playerHitZone2, vehicleHitZone1) < 40) return true;
+        }
+        if(vehicle.type == "truck"){ ///////////// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // do zrobienia
+        }
+    });
+    if (hit) renderer.setAnimationLoop(null); // stop animation loop
+  }
+  
+  function getDistance(coordinate1, coordinate2){
+      const horizontalDistance = coordinate2.x - coordinate1.x;
+      const verticalDistance = coordinate2.y - coordinate1.y;
+      return Math.sqrt(horizontalDistance ** 2 + verticalDistance ** 2);
+      
+  }
 
 //car
 function Car(){
