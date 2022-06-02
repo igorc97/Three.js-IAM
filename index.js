@@ -312,7 +312,7 @@ function animation(timestamp){
             //another vehicle hits the player
             if(getDistance(playerHitZone2, vehicleHitZone1) < 40) return true;
         }
-        if(vehicle.type == "truck"){ ///////////// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if(vehicle.type == "truck"){ /////////////tu sa skopiowane wartosci z ifa dla car'a wiec uwaga !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             const vehicleHitZone1 = getHitZonePosition(
                 vehicle.mesh.position,
                 vehicle.angle,
