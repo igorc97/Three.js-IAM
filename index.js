@@ -313,6 +313,25 @@ function animation(timestamp){
             if(getDistance(playerHitZone2, vehicleHitZone1) < 40) return true;
         }
         if(vehicle.type == "truck"){ ///////////// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            const vehicleHitZone1 = getHitZonePosition(
+                vehicle.mesh.position,
+                vehicle.angle,
+                vehicle.clockwise,
+                15
+            );
+            const vehicleHitZone2 = getHitZonePosition(
+                vehicle.mesh.position,
+                vehicle.angle,
+                vehicle.clockwise,
+                -15
+            );
+            
+            //the player hits another vehicle
+            if(getDistance(playerHitZone1, vehicleHitZone1) < 40) return true;
+            if(getDistance(playerHitZone1, vehicleHitZone2) < 40) return true;
+
+            //another vehicle hits the player
+            if(getDistance(playerHitZone2, vehicleHitZone1) < 40) return true;
             // do zrobienia
         }
     });
@@ -383,16 +402,26 @@ function Car(){
 }
 
 function Truck(){
+    const carObstacle = new THREE.Group();//wczesniej nie bylo tej komendy i wywalalo, a teraz respi sie truck jako tekstura, ale tak naprawde jezdzi truck widmo xD
     loader.load('objects/playerCar/scene.glb', function(gltf){
     scene.add(gltf.scene);
+
         //treeObj = gltf.scene;
         
+        carObstacle.scale.set(0.2,0.2,0.2);
+        carObstacle.rotation.x = Math.PI/2;
+        carObstacle.rotation.y = Math.PI/2;
+        carObstacle.position.x = 25.5
+        carObstacle.position.z = 25.5
         carObstacle = gltf.scene;
-   
+
+
     //scene.add(tree);  //to moze potem xd
 }, undefined, function(error){
     console.error(error);
 });
+
+
 return carObstacle;
 }
 
