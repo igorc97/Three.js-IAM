@@ -4,13 +4,53 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Game!</title>
-    
+    <title>Car Game! IAM Project</title>
+    <link rel = "stylesheet" href="./style.css">
 </head>
 <body>
-    <script type="module" src="index.js"></script>
-  
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "../node_modules/three/build/three.module.js"
+                
+            }
+        }
+    </script>
     
+
+<div id="score"> Press Key Up button</div>
+<div id="controls">
+    <div id="buttons">
+        <button id="accelerate">
+            <svg width="30" height="30" viewBox="0 0 10 10">
+                <g transform="rotate(0, 5,5)">
+                  <path d="M5,4 L7,6 L3,6 L5,4" />
+                </g>
+              </svg>
+        </button>
+        <button id="decelerate">
+            <svg width="30" height="30" viewBox="0 0 10 10">
+                <g transform="rotate(180, 5,5)">
+                  <path d="M5,4 L7,6 L3,6 L5,4" />
+                </g>
+              </svg>
+        </button>
+    </div>
+    <div id="instructions">
+        Press arrow up key to start. Avoid collision with obstacles by accelerating or decelerating with UP and DOWN arrow keys.
+    </div>
+</div>
+<div id="results">
+    <div class="content">
+        <h1>You hit obstacle!</h1>
+        <p>To reset the game press R button</p>
+    </div>
+</div>
+ 
+
+<button id="backToHomeMenu" style="margin-bottom: 1em; position: center;"><a href="./menu_page/menu.html"></a></button>
+    
+<script type="module" src="index.js"></script>
 
 </body>
 </html>
