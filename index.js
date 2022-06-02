@@ -402,7 +402,7 @@ function Car(){
 }
 
 function Truck(){
-    const carObstacle = new THREE.Group();//wczesniej nie bylo tej komendy i wywalalo, a teraz respi sie truck jako tekstura, ale tak naprawde jezdzi truck widmo xD
+    var carObstacle = new THREE.Group();//wczesniej nie bylo tej komendy i wywalalo, a teraz respi sie truck jako tekstura, ale tak naprawde jezdzi truck widmo xD
     loader.load('objects/playerCar/scene.glb', function(gltf){
     scene.add(gltf.scene);
 
