@@ -72,6 +72,10 @@ a:visited{
     max-width: 350px;
     padding: 50px;
     border-radius: 20px;
+    align-self: center;
+    align-items: center;
+    align-content: center;
+    
   }
 
   @media (min-height: 425px) {
