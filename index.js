@@ -4,6 +4,7 @@ import { GLTFLoader }  from './node_modules/three/examples/jsm/loaders/GLTFLoade
 
 let tree, carObstacle;
 let treeObj = new THREE.Object3D(); // three object where glb will be stored
+let treeObj2 = new THREE.Object3D(); // three object where glb will be stored
 const scene = new THREE.Scene();
 const playerCar = Car();
 scene.add(playerCar);       // adding player's car to the scene
@@ -402,18 +403,18 @@ function Car(){
 }
 
 function Truck(){
-    var carObstacle = new THREE.Group();//wczesniej nie bylo tej komendy i wywalalo, a teraz respi sie truck jako tekstura, ale tak naprawde jezdzi truck widmo xD
+    var carObstacle = new THREE.Object3D();//wczesniej nie bylo tej komendy i wywalalo, a teraz respi sie truck jako tekstura, ale tak naprawde jezdzi truck widmo xD
     loader.load('objects/playerCar/scene.glb', function(gltf){
     scene.add(gltf.scene);
 
         //treeObj = gltf.scene;
-        
+        carObstacle = (gltf.scene);
         carObstacle.scale.set(0.2,0.2,0.2);
         carObstacle.rotation.x = Math.PI/2;
         carObstacle.rotation.y = Math.PI/2;
-        carObstacle.position.x = 25.5
-        carObstacle.position.z = 25.5
-        carObstacle = gltf.scene;
+        //carObstacle.position.x = 1;
+        //carObstacle.position.z = 20;
+
 
 
     //scene.add(tree);  //to moze potem xd
@@ -633,33 +634,37 @@ function renderMap(mapWidth, mapHeight){
     ]);
     scene.add(fieldMesh);
 
+    var i;
+    for(i=0;i<6;i++){
     if(config.trees){
+        
         const tree1 = Tree();
-        tree1.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
+        //tree1.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
         //tree1.scale.set = (20,20,20);
         //tree1.rotation.x = Math.PI/4;
         //tree1.rotation.y = Math.PI/4;
-        scene.add(tree1);
+        //scene.add(tree1);
         
-        const tree2 = Tree();
-        tree2.position.y = arcCenterX * 1.9;
-        tree2.position.x = arcCenterX * 1.3;
-        scene.add(tree2);
+        const tree2 = Tree2();
+        //tree2.position.y = arcCenterX * 1.9;
+        //tree2.position.x = arcCenterX * 1.3;
+       //scene.add(tree2);
     
-        const tree3 = Tree();
-        tree3.position.y = arcCenterX * 0.8;
-        tree3.position.x = arcCenterX * 2;
-        scene.add(tree3);
+        const tree3 = Tree3();
+        //tree3.position.y = arcCenterX * 0.8;
+        //tree3.position.x = arcCenterX * 2;
+        //scene.add(tree3);
     
-        const tree4 = Tree();
-        tree4.position.y = arcCenterX * 1.8;
-        tree4.position.x = arcCenterX * 2;
-        scene.add(tree4);
+        const tree4 = Tree5();
+        //tree4.position.y = arcCenterX * 1.8;
+        //tree4.position.x = arcCenterX * 2;
+        //scene.add(tree4);
     
-        const tree5 = Tree();
-        tree5.position.y = -arcCenterX * 1;
-        tree5.position.x = arcCenterX * 2;
-        scene.add(tree5);
+        const tree5 = Tree4();
+        //tree5.position.y = -arcCenterX * 1;
+        //tree5.position.x = arcCenterX * 2;
+        //scene.add(tree5);
+    }
     }
 }
 
@@ -669,9 +674,61 @@ function pickRandom(array){              /// dodac kolory? tak zeby randomowo da
 
 function Tree(){
     const tree = new THREE.Group();
-    var i=0;
-    for(i=0;i<6;i++){
-    loader.load('objects/tree/tree.glb', function(gltf){
+
+    loader.load('objects/tree/tree.glb', function(glb){
+        
+        //(glb.scene).rotation.x = Math.PI/4;
+        //(glb.scene).rotation.y = Math.PI/4;
+        //(glb.scene).scale.set = (20,20,20);
+      
+        treeObj.scale.set(20,20,20);
+        treeObj.rotation.x = Math.PI/4;
+        treeObj.rotation.y = Math.PI/4;
+        treeObj = glb.scene;
+//        treeObj.scale = (10,10,10);
+        //treeObj.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
+        treeObj.position.y = arcCenterX * 1.9;
+        treeObj.position.x = arcCenterX * 1.3;
+
+        scene.add(glb.scene);  
+        
+        // treeObj2.scale.set(20,20,20);
+        // treeObj2.rotation.x = Math.PI/4;
+        // treeObj2.rotation.y = Math.PI/4;
+        // treeObj2 = gltf.scene;
+
+        // treeObj2.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
+        // treeObj2.position.y = arcCenterX * 1.9;
+        // treeObj2.position.x = arcCenterX * 1.3;
+
+        // scene.add(treeObj2);  
+        // const tree2 = Tree();
+        // tree2.position.y = arcCenterX * 1.9;
+        // tree2.position.x = arcCenterX * 1.3;
+        // scene.add(tree2);
+
+    //     const tree3 = Tree();
+    //     tree3.position.y = arcCenterX * 0.8;
+    //     tree3.position.x = arcCenterX * 2;
+    //     scene.add(tree3);
+     //scene.add(tree);  //to moze potem xd
+}
+
+, undefined, function(error){
+    console.error(error);
+});
+
+
+    tree.add(treeObj);
+    tree.add(treeObj2);
+//    tree.add(treeObj2);
+    return tree;
+}
+
+function Tree2(){
+    const tree = new THREE.Group();
+
+    loader.load('objects/tree/tree.glb', function(glb){
         
         //(gltf.scene).rotation.x = Math.PI/4;
         //(gltf.scene).rotation.y = Math.PI/4;
@@ -680,28 +737,162 @@ function Tree(){
         treeObj.scale.set(20,20,20);
         treeObj.rotation.x = Math.PI/4;
         treeObj.rotation.y = Math.PI/4;
-        treeObj = gltf.scene;
+        treeObj = glb.scene;
 //        treeObj.scale = (10,10,10);
+        treeObj.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
+        //treeObj.position.y = arcCenterX * 1.9;
+        //treeObj.position.x = arcCenterX * 1.3;
 
-        scene.add(gltf.scene);  
-   
+        scene.add(glb.scene);  
 
 
-    //scene.add(tree);  //to moze potem xd
 }
 
 , undefined, function(error){
     console.error(error);
 });
-}
+
 
     tree.add(treeObj);
-    return treeObj;
+//    tree.add(treeObj2);
+    return tree;
+}
+
+function Tree3(){
+    const tree = new THREE.Group();
+
+    loader.load('objects/tree/tree.glb', function(glb){
+
+        treeObj.scale.set(20,20,20);
+        treeObj.rotation.x = Math.PI/4;
+        treeObj.rotation.y = Math.PI/4;
+        treeObj = glb.scene;
+
+        treeObj.position.y = arcCenterX * -0.6;
+        treeObj.position.x = arcCenterX * -1.6;
+
+        scene.add(glb.scene);  
+
+     //scene.add(tree);  //to moze potem xd
 }
 
 
 
+, undefined, function(error){
+    console.error(error);
+});
 
+
+    tree.add(treeObj);
+
+    return tree;
+}
+
+function Tree4(){
+    const tree = new THREE.Group();
+
+    loader.load('objects/tree/tree.glb', function(glb){
+        
+        //(glb.scene).rotation.x = Math.PI/4;
+        //(glb.scene).rotation.y = Math.PI/4;
+        //(glb.scene).scale.set = (20,20,20);
+      
+        treeObj.scale.set(20,20,20);
+        treeObj.rotation.x = Math.PI/4;
+        treeObj.rotation.y = Math.PI/4;
+        treeObj = glb.scene;
+//        treeObj.scale = (10,10,10);
+        //treeObj.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
+        treeObj.position.y = arcCenterX * 1.8;
+        treeObj.position.x = arcCenterX * 2;
+
+        scene.add(glb.scene);  
+        
+        // treeObj2.scale.set(20,20,20);
+        // treeObj2.rotation.x = Math.PI/4;
+        // treeObj2.rotation.y = Math.PI/4;
+        // treeObj2 = gltf.scene;
+
+        // treeObj2.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
+        // treeObj2.position.y = arcCenterX * 1.9;
+        // treeObj2.position.x = arcCenterX * 1.3;
+
+        // scene.add(treeObj2);  
+        // const tree2 = Tree();
+        // tree2.position.y = arcCenterX * 1.9;
+        // tree2.position.x = arcCenterX * 1.3;
+        // scene.add(tree2);
+
+    //     const tree3 = Tree();
+    //     tree3.position.y = arcCenterX * 0.8;
+    //     tree3.position.x = arcCenterX * 2;
+    //     scene.add(tree3);
+     //scene.add(tree);  //to moze potem xd
+}
+
+, undefined, function(error){
+    console.error(error);
+});
+
+
+    tree.add(treeObj);
+    tree.add(treeObj2);
+//    tree.add(treeObj2);
+    return tree;
+}
+
+function Tree5(){
+    const tree = new THREE.Group();
+
+    loader.load('objects/tree/tree.glb', function(glb){
+        
+        //(glb.scene).rotation.x = Math.PI/4;
+        //(glb.scene).rotation.y = Math.PI/4;
+        //(glb.scene).scale.set = (20,20,20);
+      
+        treeObj.scale.set(20,20,20);
+        treeObj.rotation.x = Math.PI/4;
+        treeObj.rotation.y = Math.PI/4;
+        treeObj = glb.scene;
+//        treeObj.scale = (10,10,10);
+        //treeObj.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
+        treeObj.position.y = -arcCenterX * -1.6;
+        treeObj.position.x = arcCenterX * 2;
+
+        scene.add(glb.scene);  
+        
+        // treeObj2.scale.set(20,20,20);
+        // treeObj2.rotation.x = Math.PI/4;
+        // treeObj2.rotation.y = Math.PI/4;
+        // treeObj2 = gltf.scene;
+
+        // treeObj2.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
+        // treeObj2.position.y = arcCenterX * 1.9;
+        // treeObj2.position.x = arcCenterX * 1.3;
+
+        // scene.add(treeObj2);  
+        // const tree2 = Tree();
+        // tree2.position.y = arcCenterX * 1.9;
+        // tree2.position.x = arcCenterX * 1.3;
+        // scene.add(tree2);
+
+    //     const tree3 = Tree();
+    //     tree3.position.y = arcCenterX * 0.8;
+    //     tree3.position.x = arcCenterX * 2;
+    //     scene.add(tree3);
+     //scene.add(tree);  //to moze potem xd
+}
+
+, undefined, function(error){
+    console.error(error);
+});
+
+
+    tree.add(treeObj);
+    tree.add(treeObj2);
+//    tree.add(treeObj2);
+    return tree;
+}
 
 accelerateButton.addEventListener("mousedown", function(){
     startGame();
