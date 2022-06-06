@@ -127,7 +127,7 @@ reset();
          ready = false;
          scoreElement.innerText = 0;
          buttonsElement.style.opacity = 1;
-         instructionsElement.style.opacity = 0;
+         instructionsElement.style.opacity = 1;
          renderer.setAnimationLoop(animation);
      }
  }
@@ -371,6 +371,38 @@ function getCarSideTexture(){
     return new THREE.CanvasTexture(canvas);
 }
 
+function getTruckFrontTexture(){
+    const canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 32;
+    const context = canvas.getContext("2d");
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, 64, 32);
+
+    context.fillStyle = "#666666";
+    context.fillRect(4, 8, 56, 24);
+
+    return new THREE.CanvasTexture(canvas);
+}
+//testowanie trucka
+function getTruckSideTexture(){
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 32;
+    const context = canvas.getContext("2d");
+
+    context.fillStyle = "#ffffff";
+    context.fillRect(0, 0, 256, 32);
+
+    context.fillStyle = "#666666";
+    context.fillRect(10, 8, 90, 24);
+    context.fillRect(110, 8, 160, 24);
+
+    return new THREE.CanvasTexture(canvas);
+}
+
+
 //car
 function Car(){
     const car = new THREE.Group();
@@ -428,27 +460,66 @@ function Car(){
 }
 
 function Truck(){
-    var carObstacle = new THREE.Object3D();//wczesniej nie bylo tej komendy i wywalalo, a teraz respi sie truck jako tekstura, ale tak naprawde jezdzi truck widmo xD
-    loader.load('objects/playerCar/scene.glb', function(gltf){
-    scene.add(gltf.scene);
+    const truck = new THREE.Group();
 
-        //treeObj = gltf.scene;
-        carObstacle = (gltf.scene);
-        carObstacle.scale.set(0.2,0.2,0.2);
-        carObstacle.rotation.x = Math.PI/2;
-        carObstacle.rotation.y = Math.PI/2;
-        //carObstacle.position.x = 1;
-        //carObstacle.position.z = 20;
+    const backWheel = new THREE.Mesh(
+        new THREE.BoxBufferGeometry(12, 33, 12),
+        new THREE.MeshLambertMaterial({color: 0x333333})
+    );
+    backWheel.position.z = 6;
+    backWheel.position.x = -18;
+    truck.add(backWheel);
 
+    const frontWheel = new THREE.Mesh(
+        new THREE.BoxBufferGeometry(12, 33, 12),
+        new THREE.MeshLambertMaterial({color: 0x333333})
+    );
+    frontWheel.position.z = 6;
+    frontWheel.position.x = 36;
+    truck.add(frontWheel);
 
+    const main = new THREE.Mesh(
+        new THREE.BoxBufferGeometry(120, 30, 15),
+        new THREE.MeshLambertMaterial({color: 0xa52523})
+    );
+    main.position.z = 12;
+    truck.add(main);
 
-    //scene.add(tree);  //to moze potem xd
-}, undefined, function(error){
-    console.error(error);
-});
+    const back = new THREE.Mesh(
+        new THREE.BoxBufferGeometry(87, 35, 15),
+        new THREE.MeshLambertMaterial({color: 0xa524324})
+    );
+    back.position.z = 26;
+    back.position.x = -20;
+    truck.add(back);
 
+     ////////adjusting window textures
+     const truckFrontTexture = getTruckFrontTexture();
+     truckFrontTexture.center = new THREE.Vector2(0.5, 0.5);
+     truckFrontTexture.rotation = Math.PI / 2;
+ 
+     const truckBackTexture = getTruckFrontTexture();
+     truckBackTexture.center = new THREE.Vector2(0.5, 0.5);
+     truckBackTexture.rotation = -Math.PI / 2;
+ 
+     const truckRightSideTexture = getTruckSideTexture();
+     const truckLeftSideTexture = getTruckSideTexture();
+     truckLeftSideTexture.flipY = false;
 
-return carObstacle;
+    const cabin = new THREE.Mesh(
+        new THREE.BoxBufferGeometry(33, 30, 12),[
+            new THREE.MeshLambertMaterial({map: truckFrontTexture}),
+            new THREE.MeshLambertMaterial({map: truckBackTexture}),
+            new THREE.MeshLambertMaterial({map: truckLeftSideTexture}),
+            new THREE.MeshLambertMaterial({map: truckRightSideTexture}),
+            new THREE.MeshLambertMaterial({color: 0xffffff}), //top
+            new THREE.MeshLambertMaterial({color: 0xffffff}), //bottom
+        ]);
+    cabin.position.z = 25.5;
+    cabin.position.x = 40;
+    truck.add(cabin);
+
+    return truck;
 }
 
 
@@ -477,8 +548,8 @@ function Tree(){
         treeObj = glb.scene;
 //        treeObj.scale = (10,10,10);
         //treeObj.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
-        treeObj.position.y = arcCenterX * 1.9;
-        treeObj.position.x = arcCenterX * 1.3;
+        treeObj.position.y = arcCenterX * -1.9;
+        treeObj.position.x = arcCenterX * -2.3;
 
         scene.add(glb.scene);  
         
@@ -593,8 +664,8 @@ function Tree4(){
         treeObj = glb.scene;
 //        treeObj.scale = (10,10,10);
         //treeObj.position.x = arcCenterX * 1.3;      // tree in the middle of right circle
-        treeObj.position.y = arcCenterX * 1.8;
-        treeObj.position.x = arcCenterX * 2;
+        treeObj.position.y = arcCenterX * 0.7;
+        treeObj.position.x = arcCenterX * -1;
 
         scene.add(glb.scene);  
         
@@ -815,8 +886,8 @@ function animation(timestamp){
          return minimumSpeed + Math.random() * (maximumSpeed - minimumSpeed);
      }
      if(type == "truck"){
-         const minimumSpeed = 0.6;
-         const maximumSpeed = 1.5;
+         const minimumSpeed = 0.5;
+         const maximumSpeed = 0.9;
          return minimumSpeed + Math.random() * (maximumSpeed - minimumSpeed);
      }
  }
@@ -871,7 +942,7 @@ function animation(timestamp){
                 vehicle.mesh.position,
                 vehicle.angle,
                 vehicle.clockwise,
-                35
+                40
             );
             const vehicleHitZone2 = getHitZonePosition(
                 vehicle.mesh.position,
@@ -884,7 +955,7 @@ function animation(timestamp){
                 vehicle.mesh.position,
                 vehicle.angle,
                 vehicle.clockwise,
-                -35
+                -40
             );
             
             //the player hits another vehicle
